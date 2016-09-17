@@ -42,11 +42,11 @@ public:
   /**
    * construct from function pointer
    */
-  Hook(ReturnType (*function)(ArgTypes...));
+  Hook(const char* name, ReturnType (*function)(ArgTypes...));
   /**
    * construct from method pointer
    */
-  Hook(MethodInfo<ReturnType, ArgTypes...> method);
+  Hook(const char* name, MethodInfo<ReturnType, ArgTypes...> method);
   /// restore original function
   ~Hook();
   /**
@@ -60,19 +60,24 @@ public:
 
 private:
   static GOTEntry got_entry_;
+  static const char* name_;
   using Base = HookImpl<CRTP, ReturnType, ArgTypes...>;
 };
 
 template <typename CRTP, typename ReturnType, typename... ArgTypes>
 GOTEntry Hook<CRTP, ReturnType, ArgTypes...>::got_entry_;
+template <typename CRTP, typename ReturnType, typename... ArgTypes>
+const char* Hook<CRTP, ReturnType, ArgTypes...>::name_ = "no name";
 
 template <typename CRTP, typename ReturnType, typename... ArgTypes>
-Hook<CRTP, ReturnType, ArgTypes...>::Hook(ReturnType (*function)(ArgTypes...))
+Hook<CRTP, ReturnType, ArgTypes...>::Hook(const char* name, 
+                                          ReturnType (*function)(ArgTypes...))
 {
+  name_ = name;
   // use union to get and convert address of function
   Function<ReturnType, ArgTypes...> converter;
   converter.address_ = function;
-  got_entry_.set(converter.pointer_);
+  got_entry_.set(converter.pointer_, name);
   converter.address_ = &Base::thunk;
   converter.pointer_ = got_entry_.spy_with(converter.pointer_);
   Base::patch_ = Base::real_ = converter.address_;
@@ -80,9 +85,10 @@ Hook<CRTP, ReturnType, ArgTypes...>::Hook(ReturnType (*function)(ArgTypes...))
 
 template <typename CRTP, typename ReturnType, typename... ArgTypes>
 inline Hook<CRTP, ReturnType, ArgTypes...>::
-Hook(MethodInfo<ReturnType, ArgTypes...> method)
+Hook(const char* name, MethodInfo<ReturnType, ArgTypes...> method)
 {
-  got_entry_.set(method.address_);
+  name_ = name;
+  got_entry_.set(method.address_, name);
   if (method.vtable_entry_) {
     got_entry_.make_entry(method.vtable_entry_);
   }

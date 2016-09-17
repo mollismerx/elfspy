@@ -22,9 +22,10 @@ public:
   GOTEntry() = default;
   /**
    * @param function address of function
+   * @param name name of function
    * @return original unaltered address of function
    */
-  void* set(void* function);
+  void* set(void* function, const char* name);
   /**
    * replace function with other function and reference count
    * @param function to enter in Global Offset Tables instead of original

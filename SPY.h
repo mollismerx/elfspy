@@ -27,7 +27,10 @@ struct Function
   struct Instance : public Hook<Instance<FUNC>, R, Args...>
   {
     using Base = Hook<Instance<FUNC>, R, Args...>;
-    Instance() : Base(FUNC) { }
+    Instance(const char* name)
+      :Base(name, FUNC)
+    {
+    }
   };
 };
 
@@ -46,7 +49,10 @@ struct MutableMethod
   struct Instance : public Hook<Instance<METHOD>, R, T*, Args...>
   {
     using Base = Hook<Instance<METHOD>, R, T*, Args...>;
-    Instance() : Base(Method<R, T, Args...>(METHOD).resolve()) { }
+    Instance(const char* name)
+      :Base(name, Method<R, T, Args...>(METHOD).resolve())
+    {
+    }
   };
 };
 
@@ -65,7 +71,10 @@ struct ConstMethod
   struct Instance : public Hook<Instance<METHOD>, R, T*, Args...>
   {
     using Base = Hook<Instance<METHOD>, R, T*, Args...>;
-    Instance() : Base(Method<R, T, Args...>(METHOD).resolve()) { }
+    Instance(const char* name)
+      :Base(name, Method<R, T, Args...>(METHOD).resolve())
+    {
+    }
   };
 };
 
@@ -84,7 +93,10 @@ struct VolatileMethod
   struct Instance : public Hook<Instance<METHOD>, R, T*, Args...>
   {
     using Base = Hook<Instance<METHOD>, R, T*, Args...>;
-    Instance() : Base(Method<R, T, Args...>(METHOD).resolve()) { }
+    Instance(const char* name)
+      :Base(name, Method<R, T, Args...>(METHOD).resolve())
+    {
+    }
   };
 };
 
@@ -103,7 +115,10 @@ struct ConstVolatileMethod
   struct Instance : public Hook<Instance<METHOD>, R, T*, Args...>
   {
     using Base = Hook<Instance<METHOD>, R, T*, Args...>;
-    Instance() : Base(Method<R, T, Args...>(METHOD).resolve()) { }
+    Instance(const char* name)
+      :Base(name, Method<R, T, Args...>(METHOD).resolve())
+    {
+    }
   };
 };
 
@@ -136,6 +151,6 @@ auto create(R (T::*)(Args...) const volatile)
  * SPY returns a (derived) instance of Hook that can be used to add Hooks to.
  */
 
-#define SPY(F) decltype(spy::impl::create(F))::Instance<F>()
+#define SPY(F) decltype(spy::impl::create(F))::Instance<F>(#F)
 
 #endif

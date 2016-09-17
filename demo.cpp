@@ -1,6 +1,7 @@
 #include "elfspy/demo.h"
 
 #include <iostream>
+#include <cassert>
 
 int f()
 {
@@ -51,3 +52,65 @@ void MyDerivedClass::virtual_method()
   method(2);
   std::cout << "MyDerivedClass::virtual_method" << std::endl;
 }
+
+void One::one_method()
+{
+  std::cout << "One::one" << std::endl;
+  assert(check1_ == 0xe110e110);
+}
+
+void Two::one_method()
+{
+  std::cout << "Two::one" << std::endl;
+  assert(check1_ == 0xe110e110);
+  assert(check2_ == 0xdeafa1de);
+}
+
+void Two::two_method()
+{
+  std::cout << "Two::two" << std::endl;
+  assert(check1_ == 0xe110e110);
+  assert(check2_ == 0xdeafa1de);
+}
+
+void Three::one_method()
+{
+  std::cout << "Three::one" << std::endl;
+  assert(check1_ == 0xe110e110);
+  assert(check3_ == 0xdeadbeef);
+}
+
+void Three::three_method()
+{
+  std::cout << "Three::three" << std::endl;
+  assert(check1_ == 0xe110e110);
+  assert(check3_ == 0xdeadbeef);
+}
+
+void Four::one_method()
+{
+  std::cout << "Four::one" << std::endl;
+  assert(check1_ == 0xe110e110);
+  assert(check2_ == 0xdeafa1de);
+  assert(check3_ == 0xdeadbeef);
+  assert(check4_ == 0xbadfeed);
+}
+
+void Four::two_method()
+{
+  std::cout << "Four::two" << std::endl;
+  assert(check1_ == 0xe110e110);
+  assert(check2_ == 0xdeafa1de);
+  assert(check3_ == 0xdeadbeef);
+  assert(check4_ == 0xbadfeed);
+}
+
+void Four::three_method()
+{
+  std::cout << "Four::three" << std::endl;
+  assert(check1_ == 0xe110e110);
+  assert(check2_ == 0xdeafa1de);
+  assert(check3_ == 0xdeadbeef);
+  assert(check4_ == 0xbadfeed);
+}
+

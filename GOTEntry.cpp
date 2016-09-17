@@ -107,7 +107,7 @@ void GOTEntry::initialise(int argc, char** argv)
 
 // base + rela.plt if symbol is found and defined
 // base + rela.dyn if symbol is found and undefined
-void* GOTEntry::set(void* function)
+void* GOTEntry::set(void* function, const char* name)
 {
   if (entries_.empty()) {
     auto address = reinterpret_cast<unsigned char*>(function);
@@ -153,7 +153,7 @@ void* GOTEntry::set(void* function)
       }
     }
     if (!defined) {
-      Report() << "cannot find definition of function " << function;
+      Report() << "cannot find definition of function " << name;
       return nullptr;
     }
     // find entries where the symbol is used in other ELF functions
