@@ -114,3 +114,29 @@ void Four::three_method()
   assert(check4_ == 0xbadfeed);
 }
 
+void Base1::method1()
+{
+  std::cout << "One::One" << std::endl;
+  assert(check1_ == 12345678);
+}
+
+void Base2::method2()
+{
+  std::cout << "Two::Two" << std::endl;
+  assert(check2_ == 87654321);
+}
+
+void Multiple::method1()
+{
+  std::cout << "Multiple::One" << std::endl;
+  assert(check1_ == 12345678);
+  assert(check2_ == 87654321);
+}
+
+void Multiple::method2()
+{
+  std::cout << "Multiple::Two" << std::endl;
+  assert(check1_ == 12345678);
+  assert(check2_ == 87654321);
+}
+

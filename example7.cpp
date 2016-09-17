@@ -75,9 +75,36 @@ void three_method4(Four* four)
   assert(four->check4_ == 0xbadfeed);
 }
 
+void Base1__method1(Base1* base1)
+{
+  std::cout << "1::1" << std::endl;
+  assert(base1->check1_ == 12345678);
+}
+
+void Base2__method2(Base2* base2)
+{
+  std::cout << "2::2" << std::endl;
+  assert(base2->check2_ == 87654321);
+}
+
+void Multiple__method1(Multiple* multiple)
+{
+  std::cout << "M::1" << std::endl;
+  assert(multiple->check1_ == 12345678);
+  assert(multiple->check2_ == 87654321);
+}
+
+void Multiple__method2(Multiple* multiple)
+{
+  std::cout << "M::2" << std::endl;
+  assert(multiple->check1_ == 12345678);
+  assert(multiple->check2_ == 87654321);
+}
+
 int main(int argc, char** argv)
 {
   spy::initialise(argc, argv);
+  // single inheritance test
   auto method_spy = SPY(&MyClass::virtual_method);
   MyClass my_object;
   auto method_this = spy::arg<0>(method_spy);
@@ -90,6 +117,23 @@ int main(int argc, char** argv)
   MyClass* my_heap_object = new MyClass;
   my_heap_object->virtual_method();
   assert(method_this.value(1) == my_heap_object);
+  // multiple inheritance test
+  auto bspy1 = SPY(&Base1::method1);
+  auto bspy2 = SPY(&Base2::method2);
+  auto mspy1 = SPY(&Multiple::method1);
+  auto mspy2 = SPY(&Multiple::method2);
+  auto bfake1 = spy::fake(bspy1, &Base1__method1);
+  auto bfake2 = spy::fake(bspy2, &Base2__method2);
+  auto mfake1 = spy::fake(mspy1, &Multiple__method1);
+  auto mfake2 = spy::fake(mspy2, &Multiple__method2);
+  Base1* base1 = new Base1;
+  Base2* base2 = new Base2;
+  Multiple* multiple = new Multiple;
+  base1->method1();
+  base2->method2();
+  multiple->method1();
+  multiple->method2();
+  // virtual inheritance test
   auto spy11 = SPY(&One::one_method);
   auto spy21 = SPY(&Two::one_method);
   auto spy22 = SPY(&Two::two_method);

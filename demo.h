@@ -64,4 +64,31 @@ protected:
   long check4_ = 0xbadfeed;
 };
 
+class Base1
+{
+public:
+  virtual ~Base1() = default;
+  virtual void method1();
+
+protected:
+  long check1_ = 12345678;
+};
+
+class Base2
+{
+public:
+  virtual ~Base2() = default;
+  virtual void method2();
+
+protected:
+  long check2_ = 87654321;
+};
+
+class Multiple : public Base1, public Base2
+{
+public:
+  virtual void method1() override;
+  virtual void method2() override;
+};
+
 #endif
