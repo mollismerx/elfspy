@@ -1,1 +1,2 @@
-C++ Testing in isolation and simulation using fakes and spies
+C++ Testing in isolation and simulation using fakes and spies.
+Implemented using function interposition and programmatic run time dynamic relinking.
