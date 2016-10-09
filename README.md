@@ -12,4 +12,4 @@ Call graph after change
 
 This technique relies on code being compiled as [position independent code](https://en.wikipedia.org/wiki/Position-independent_code) and uses the Executable and Linking Format([ELF](https://refspecs.linuxfoundation.org/elf/elf.pdf)) information found in the executable and its shared libraries to find the global offset table entries.
 
-To see how ELFspy can be used start by reading this [[example|Example 01: Spying on code]] 
+To see how ELFspy can be used start by reading this [example](https://github.com/mollismerx/elfspy/wiki/Example-01:-Spying-on-code)
