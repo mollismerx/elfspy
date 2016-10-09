@@ -3,7 +3,7 @@
 
 #include "elfspy/SPY.h"
 #include "elfspy/Fake.h"
-#include "elfspy/demo.h"
+#include "demo.h"
 
 void g1_replace(int n);
 void g2_replace();

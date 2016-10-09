@@ -5,7 +5,7 @@
 #include "elfspy/Arg.h"
 #include "elfspy/Fake.h"
 
-#include "elfspy/demo.h"
+#include "demo.h"
 
 void func(MyClass*, int n)
 {

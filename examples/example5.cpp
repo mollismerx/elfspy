@@ -4,7 +4,7 @@
 #include "elfspy/SPY.h"
 #include "elfspy/Profiler.h"
 
-#include "elfspy/demo.h"
+#include "demo.h"
 
 int main(int argc, char** argv)
 {

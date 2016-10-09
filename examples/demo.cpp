@@ -1,4 +1,4 @@
-#include "elfspy/demo.h"
+#include "demo.h"
 
 #include <iostream>
 #include <cassert>

@@ -6,7 +6,7 @@
 #include "elfspy/Arg.h"
 #include "elfspy/Result.h"
 
-#include "elfspy/demo.h"
+#include "demo.h"
 
 int main(int argc, char** argv)
 {

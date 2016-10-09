@@ -7,7 +7,7 @@
 
 #define private public
 #define protected public
-#include "elfspy/demo.h"
+#include "demo.h"
 
 void func(MyClass*)
 {
