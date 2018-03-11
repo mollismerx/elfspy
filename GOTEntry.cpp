@@ -76,7 +76,7 @@ int read_shared_object(struct dl_phdr_info* info, size_t size, void* data)
     elf_root = reinterpret_cast<unsigned char*>(info->dlpi_addr);
     name = info->dlpi_name;
   }
-  if (name && *name) {
+  if (name && *name && strncmp(name, "linux-vdso.so", 13) != 0) {
     spy::MFile file(name);
     spy::ELFInfo elf(file.address(), name);
     elf.base_ = elf_root;
