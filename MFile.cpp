@@ -10,6 +10,7 @@
 
 #include "elfspy/Fail.h"
 
+
 namespace spy
 {
 
@@ -19,11 +20,11 @@ MFile::MFile(const char* file_name)
   if (fd_ < 0) {
     Fail() << "Cannot open " << file_name;
   }
-  struct stat file;
-  if (fstat(fd_, &file) < 0) {
+  struct stat file_info;
+  if (fstat(fd_, &file_info) < 0) {
     Fail() << "Cannot fstat " << file_name;
   }
-  size_ = file.st_size;
+  size_ = file_info.st_size;
   address_ = reinterpret_cast<unsigned char*>(
       mmap(nullptr, size_, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd_, 0));
   if (address_ == MAP_FAILED) {
