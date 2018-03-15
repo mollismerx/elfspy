@@ -2,6 +2,7 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <dirent.h>
 #include <unistd.h>
 #include <link.h>
 #include <elf.h>
@@ -11,7 +12,6 @@
 #include <vector>
 #include <unordered_map>
 
-#include "elfspy/MFile.h"
 #include "elfspy/ELFInfo.h"
 #include "elfspy/Fail.h"
 #include "elfspy/Report.h"
@@ -67,22 +67,15 @@ int read_shared_object(struct dl_phdr_info* info, size_t size, void* data)
 {
   // the ELF header for each loaded object
   unsigned char* elf_root;
-  const char* name;
-  if (!info->dlpi_addr) {
+  const char* name = info->dlpi_name;
+  if (!*name) {
     // this is the executable itself - sadly the name was not included in info
-    elf_root = nullptr;
     name = program_name.c_str();
-  } else {
-    elf_root = reinterpret_cast<unsigned char*>(info->dlpi_addr);
-    name = info->dlpi_name;
   }
+  elf_root = reinterpret_cast<unsigned char*>(info->dlpi_addr);
   if (name && *name && strncmp(name, "linux-vdso.so", 13) != 0) {
-    spy::MFile file(name);
-    spy::ELFInfo elf(file.address(), name);
-    elf.base_ = elf_root;
-    elf.size_ = file.size();
-    elf.unprotect(elf_root);
-    elf_objects.push_back(elf);
+    spy::ELFInfo elf(name);
+    elf_objects.push_back(elf.prepare_object(elf_root));
     auto entries = elf.get_vtables(elf_root);
     vtables.insert(entries.begin(), entries.end());
   }
@@ -121,8 +114,7 @@ void* GOTEntry::set(void* function, const char* name)
       if (offset < object.size_) {
         // that the offset is inside the size is a tell-tale the symbol can be
         // found
-        MFile elf_file(object.name_);
-        ELFInfo elf(elf_file.address(), object.name_);
+        ELFInfo elf(object.name_);
         // find name in elf file where it is defined
         symbol = elf.get_symbol_rela(offset);
         if (symbol.rela_offset_) {
@@ -140,8 +132,7 @@ void* GOTEntry::set(void* function, const char* name)
     if (!defined) {
       // rare case of looking for an STT_IFUNC when not found at all
       for (auto& object : elf_objects) {
-        MFile elf_file(object.name_);
-        ELFInfo elf(elf_file.address(), object.name_);
+        ELFInfo elf(object.name_);
         symbol = elf.get_indirect_symbol_rela(object.base_, function);
         if (symbol.rela_offset_) {
           // symbol was defined, offset is from the .rela.plt section
@@ -161,8 +152,7 @@ void* GOTEntry::set(void* function, const char* name)
       if (&object == defined) {
         continue;
       }
-      MFile elf_file(object.name_);
-      ELFInfo elf(elf_file.address(), object.name_);
+      ELFInfo elf(object.name_);
       size_t rela_offset = elf.get_symbol_rela_dyn(symbol_name.c_str());
       if (rela_offset) {
         // symbol was undefined, offset is from the .rela.dyn section
