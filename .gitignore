@@ -1,0 +1,14 @@
+# ignore all (get's rid of executables)
+*
+
+# unignore with extenstions
+!*.*
+
+# unignore directories
+*/
+
+# ignore produced files
+*.o
+*.so
+*.elf
+*.swp
