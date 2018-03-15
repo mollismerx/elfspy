@@ -7,6 +7,7 @@ elfspy_OBJS := \
   Report.o \
   Fail.o \
   MFile.o \
+  SectionHeader.o \
   ELFInfo.o \
   GOTEntry.o \
   SPY.o \
