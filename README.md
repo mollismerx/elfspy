@@ -6,7 +6,7 @@ Call graph before change
 
 ![](https://github.com/mollismerx/elfspy/blob/master/images/spy%20before.png)
 
-Call graph after change
+Call graph after change(the code does not change, but the runtime execution does)
 
 ![](https://github.com/mollismerx/elfspy/blob/master/images/spy%20after.png)
 
