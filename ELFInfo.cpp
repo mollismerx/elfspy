@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <dirent.h>
+#include <unordered_map>
 
 #include "elfspy/Report.h"
 #include "elfspy/Fail.h"
@@ -57,6 +58,38 @@ inline void Address::round_up()
   value_ *= page_size;
 }
 
+std::string get_lib_core_name(const char* file_name)
+{
+  // strip trailing [-major[.minor]].so[.n[.n]]
+  const char* root_end = nullptr;
+  const char* pos;
+  for (pos = file_name; *pos; ++pos) {
+    if (*pos == '-') {
+      root_end = pos;
+    } else if (strncmp(pos, ".so", 3) == 0) {
+      break;
+    }
+  }
+  if (!*pos) {
+    return { }; // no .so extension - not a shared lib
+  }
+  if (root_end) {
+    for (const char* c = root_end + 1; c != pos; ++c) {
+      if (!isdigit(*c) && *c != '.') {
+        // this is not major.minor format so don't exclude it
+        root_end = pos;
+        break;
+      }
+    }
+  } else {
+    root_end = pos;
+  }
+  return { file_name, root_end };
+}
+
+using Listing = std::unordered_map<std::string, std::string>;
+std::unordered_map<std::string, Listing> debug_files;
+
 // see if a library has a corresponding debug file where the symbols are kept
 std::string get_debug_file_name(const char* file_name)
 {
@@ -65,35 +98,33 @@ std::string get_debug_file_name(const char* file_name)
     if (*seek == '/') slash = seek;
   }
   if (!slash) return { };
-  std::string name;
-  name = "/usr/lib/debug";
-  name.append(file_name, slash - file_name);
-  DIR* dir = opendir(name.c_str());
-  if (!dir) return { };
-  const char* period = nullptr;
-  for (const char* seek = slash; *seek; ++seek) {
-    if (*seek == '.') {
-      period = seek;
-      break;
-    }
-  }
-  if (!period) return { };
-  const char* base_name = slash + 1;
-  size_t name_root_len = period - base_name;
-  struct dirent* entry;
-  while ((entry = readdir(dir))) {
-    if (strncmp(entry->d_name, base_name, name_root_len) == 0) {
-      const char* after_root = entry->d_name + name_root_len;
-      // files in debug dir seem to be named libxxx-major.minor.so
-      if (*after_root == '-' || *after_root == '.') {
-        closedir(dir);
-        name += '/';
-        name += entry->d_name;
-        return name;
+  // see if directory has already been scanned
+  std::string dir_name(file_name, slash);
+  auto insert = debug_files.emplace(std::move(dir_name), std::move(Listing{}));
+  auto& listing = *insert.first;
+  auto& entries = listing.second;
+  if (insert.second) {
+    const std::string& dir_name = listing.first;
+    std::string name;
+    name.reserve(1024); // reasonable unscientific value
+    name = "/usr/lib/debug";
+    name.append(dir_name);
+    DIR* dir = opendir(name.c_str());
+    if (!dir) return { };
+    name.push_back('/');
+    struct dirent* entry;
+    while ((entry = readdir(dir))) {
+      std::string root_name = get_lib_core_name(entry->d_name);
+      if (!root_name.empty()) {
+        entries.emplace(std::move(root_name), std::move(name + entry->d_name));
       }
     }
+    closedir(dir);
   }
-  closedir(dir);
+  auto seek = entries.find(get_lib_core_name(slash + 1));
+  if (seek != entries.end()) {
+    return seek->second;
+  }
   return { };
 }
 
