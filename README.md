@@ -10,6 +10,6 @@ Call graph after change(the code does not change, but the runtime execution does
 
 ![](https://github.com/mollismerx/elfspy/blob/master/images/spy%20after.png)
 
-This technique relies on code being compiled as [position independent code](https://en.wikipedia.org/wiki/Position-independent_code) and uses the Executable and Linking Format([ELF](https://refspecs.linuxfoundation.org/elf/elf.pdf)) information found in the executable and its shared libraries to find the global offset table entries.
+This technique relies on code being compiled as [position independent code](https://en.wikipedia.org/wiki/Position-independent_code) and uses the Executable and Linking Format([ELF](https://refspecs.linuxfoundation.org/elf/elf.pdf)) information found in the executable and its shared libraries to find the global offset table entriesi and modify them.
 
 To see how ELFspy can be used start by reading this [example](https://github.com/mollismerx/elfspy/wiki/Example-01:-Spying-on-code)
