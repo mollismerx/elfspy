@@ -28,3 +28,5 @@ all : $(BINARIES)
 
 include ../makefile.inc
 
+LD_FLAGS += -Wl,-rpath,$(PWD)/.. -Wl,-rpath,$(PWD)
+
